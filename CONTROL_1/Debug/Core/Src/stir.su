@@ -1,0 +1,4 @@
+../Core/Src/stir.c:7:7:Get_Sign	16	static
+../Core/Src/stir.c:18:7:SpeedMode	16	static
+../Core/Src/stir.c:30:6:Start_Stir	16	static
+../Core/Src/stir.c:41:6:Stop_Stir	16	static

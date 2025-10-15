@@ -1,0 +1,2 @@
+../Core/Src/temperature.c:9:6:TempSensor_Init	1
+../Core/Src/temperature.c:13:7:Read_Temperature	6

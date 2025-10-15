@@ -1,0 +1,6 @@
+../Core/Src/oxygen.c:9:15:ModbusBytesToFloat	1
+../Core/Src/oxygen.c:23:9:Oxygen_Init	18
+../Core/Src/oxygen.c:32:9:Oxygen_Get	1
+../Core/Src/oxygen.c:42:9:Oxygen_Read	2
+../Core/Src/oxygen.c:53:9:Oxygen_Task	4
+../Core/Src/oxygen.c:80:6:Send_Task	2
