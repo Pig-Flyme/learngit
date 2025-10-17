@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -35,6 +36,7 @@
 #include "oxygen.h"
 #include "pid.h"
 #include "ntc_control.h"
+#include "ads8688.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +92,7 @@ int _write(int file, char *ptr, int len) {
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 static void MPU_Config(void);
 /* USER CODE BEGIN PFP */
 
@@ -126,6 +129,9 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  /* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -140,12 +146,18 @@ int main(void)
   MX_UART4_Init();
   MX_ADC2_Init();
   MX_UART7_Init();
+  MX_ADC1_Init();
+  MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
+  ADS8688_Init();
+  printf("ADS8688 Initialized Successfully!\r\n");
+  HAL_Delay(50);
   Relay_Init();
+  HAL_Delay(50);
   static uint32_t last_Endgas_time = 0;//尾气任务计时
   static uint32_t last_ph_time = 0;//ph任务计时
   static uint32_t last_temp_time = 0;  // 温控任务计时器
-  //static uint32_t last_ox_time = 0;// 溶氧任务计时器
+  static uint32_t last_ox_time = 0;// 溶氧任务计时器
   HAL_UARTEx_ReceiveToIdle_DMA(&huart7, rx_data7, sizeof(rx_data7));
   __HAL_DMA_DISABLE_IT(huart7.hdmarx, DMA_IT_HT);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3, rx_data3, sizeof(rx_data3));
@@ -184,6 +196,10 @@ int main(void)
 	        last_temp_time = HAL_GetTick();
 	      }
 
+	      if (HAL_GetTick() - last_ox_time >= 2000) {
+	    	  ADS8688_ScanAllChannels();  // 更新温度控制
+	      	      last_ox_time = HAL_GetTick();
+	      	      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -240,6 +256,32 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInitStruct.PLL2.PLL2M = 4;
+  PeriphClkInitStruct.PLL2.PLL2N = 10;
+  PeriphClkInitStruct.PLL2.PLL2P = 2;
+  PeriphClkInitStruct.PLL2.PLL2Q = 2;
+  PeriphClkInitStruct.PLL2.PLL2R = 2;
+  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
+  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
+  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
