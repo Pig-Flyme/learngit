@@ -9,14 +9,27 @@
 #define SETPOINT 37.0f
 #define PRE_ADJUST_TOLERANCE 1.0f
 #define AUTO_TUNE_DURATION 300000   // 5分钟
-#define FORCE_HEATING_THRESHOLD 36.5f
-#define RELAY_HYSTERESIS 0.2f       // 滞环防抖动
+#define FORCE_HEATING_THRESHOLD 36.0f
 
 static PID_HandleTypeDef pid;
-static PID_Params_t pid_params = {4.0f, 0.05f, 2.0f};  // 新推荐参数
+static PID_Params_t pid_params = {4.0f, 0.05f, 2.0f};
 static AutoTuneHandle tune_handle;
 static uint8_t tune_complete = 0;
 static uint32_t last_heating_time = 0;
+
+// 稳定性和振荡检测
+static uint8_t stable_count = 0;
+static uint8_t recording_started = 0;
+static uint8_t oscillation_count = 0;
+static uint8_t cross_setpoint = 0;
+static float last_temp_for_osc = SETPOINT;
+#define STABLE_THRESHOLD 8
+
+// PWM控制参数
+#define PWM_PERIOD 10000  // 10秒周期
+static uint32_t pwm_start_time = 0;
+static uint32_t current_on_time = 0;
+static uint8_t pwm_initialized = 0;
 
 // =================== 阶段1：预调节 ===================
 static void PreAdjustTemperature(void) {
@@ -52,9 +65,21 @@ void NTC_Control_Init(void) {
                       SETPOINT, AUTO_TUNE_DURATION);
     tune_complete = 0;
     last_heating_time = HAL_GetTick();
+
+    // 初始化振荡检测变量
+    stable_count = 0;
+    recording_started = 0;
+    oscillation_count = 0;
+    cross_setpoint = 0;
+    last_temp_for_osc = Read_Temperature();
+
+    // 初始化PWM
+    pwm_start_time = HAL_GetTick();
+    current_on_time = 0;
+    pwm_initialized = 1;
 }
 
-// =================== 主控制任务 ===================
+// =================== 10秒周期PWM控制 ===================
 void NTC_Control_Update(void) {
     float temp = Read_Temperature();
     if (temp <= -50.0f) return;
@@ -77,6 +102,10 @@ void NTC_Control_Update(void) {
             }
             PID_UpdateParams(&pid, pid_params.Kp, pid_params.Ki, pid_params.Kd);
             tune_complete = 1;
+            // 重置稳定性和振荡检测
+            stable_count = 0;
+            recording_started = 0;
+            oscillation_count = 0;
             printf("PID tuned: Kp=%.3f, Ki=%.3f, Kd=%.3f\r\n",
                    pid_params.Kp, pid_params.Ki, pid_params.Kd);
         }
@@ -93,29 +122,99 @@ void NTC_Control_Update(void) {
     // --- PID计算 ---
     float output = PID_Calculate(&pid, SETPOINT, temp, dt);
 
-    // --- 滞环继电器控制 ---
-    static uint8_t relay_state = 0;
-    if (temp < SETPOINT - RELAY_HYSTERESIS) relay_state = 1;
-    else if (temp > SETPOINT + RELAY_HYSTERESIS) relay_state = 0;
-    Relay_Switch(relay_state);
-
-    // --- 强制加热逻辑 ---
-    if (temp < FORCE_HEATING_THRESHOLD && (now - last_heating_time) > 30000) {
-        Relay_Switch(1);
-        last_heating_time = now;
-        printf("[FORCE] Force heating: %.2f℃\r\n", temp);
-        return;
+    // --- 10秒周期PWM控制 ---
+    if (!pwm_initialized) {
+        pwm_start_time = now;
+        pwm_initialized = 1;
     }
 
-    // --- 自适应参数微调 ---
-    float dTemp = temp - pid.last_pv;
-    PID_SelfAdjust(&pid, SETPOINT - temp, dTemp);
-    pid.last_pv = temp;
+    // 将PID输出(-100~100)映射到PWM占空比(0~100%)
+    // 当output>0时加热，output<=0时不加热
+    float duty_cycle = 0.0f;
+    if (output > 0) {
+        duty_cycle = output / 100.0f;  // 0.0 ~ 1.0
+        if (duty_cycle > 1.0f) duty_cycle = 1.0f;
+    }
+
+    // 计算当前周期内的开启时间
+    current_on_time = (uint32_t)(duty_cycle * PWM_PERIOD);
+
+    // 计算当前周期内的时间位置
+    uint32_t cycle_position = (now - pwm_start_time) % PWM_PERIOD;
+
+    // PWM控制逻辑
+    if (cycle_position < current_on_time) {
+        Relay_Switch(1);  // 在开启时间内
+    } else {
+        Relay_Switch(0);  // 在关闭时间内
+    }
+
+    // 每周期开始时打印PWM状态
+    if (cycle_position == 0 && current_on_time > 0) {
+    	printf("[PWM] Cycle start: ON for %ums of %ums (%.1f%%)\r\n",
+    	       (unsigned int)current_on_time, (unsigned int)PWM_PERIOD, duty_cycle * 100.0f);
+    }
+
+    // --- 温和的强制加热逻辑（仅在温度远低于设定值时触发）---
+    if (temp < (SETPOINT - 2.0f) && (now - last_heating_time) > 60000) {
+        // 在强制加热时，临时设置100%占空比
+        current_on_time = PWM_PERIOD;
+        last_heating_time = now;
+        printf("[FORCE] Force heating at %.2f℃\r\n", temp);
+    }
+
+    // --- 稳定状态检测 ---
+    if (fabsf(temp - SETPOINT) <= 0.1f) {
+        stable_count++;
+        if (stable_count >= STABLE_THRESHOLD && !recording_started) {
+            recording_started = 1;
+            printf("=== STABLE STATE REACHED - Start Recording ===\r\n");
+        }
+    } else {
+        stable_count = 0;
+    }
+
+    // --- 振荡次数检测 ---
+    if ((last_temp_for_osc < SETPOINT && temp >= SETPOINT) ||
+        (last_temp_for_osc > SETPOINT && temp <= SETPOINT)) {
+        cross_setpoint = 1;
+    }
+
+    if (cross_setpoint && fabsf(temp - SETPOINT) > 0.3f) {
+        oscillation_count++;
+        cross_setpoint = 0;
+        printf("[OSC] Oscillation detected: %d/2\r\n", oscillation_count);
+
+        if (oscillation_count >= 2 && !recording_started) {
+            recording_started = 1;
+            printf("=== 2 OSCILLATIONS COMPLETE - Start Recording ===\r\n");
+        }
+    }
+
+    last_temp_for_osc = temp;
 
     // --- UART输出 ---
-    char buf[128];
-    snprintf(buf, sizeof(buf), "Temp: %.2fC | Relay: %s | Out: %.1f | Kp:%.2f Ki:%.3f\r\n",
-             temp, relay_state ? "ON" : "OFF", output,
-             pid.params.Kp, pid.params.Ki);
-    HAL_UART_Transmit(&huart1, (uint8_t*)buf, strlen(buf), 100);
+    static uint32_t last_debug_time = 0;
+    if (now - last_debug_time >= 2000) {  // 每2秒输出一次，避免太频繁
+        char buf[128];
+        uint32_t cycle_pos = (now - pwm_start_time) % PWM_PERIOD;
+        snprintf(buf, sizeof(buf), "Temp: %.2fC | PWM: %lu/%lums | Out: %.1f | Kp:%.2f | Osc:%d/2 | Rec:%s\r\n",
+                 temp, cycle_pos < current_on_time ? current_on_time - cycle_pos : 0,
+                 current_on_time, output, pid.params.Kp, oscillation_count,
+                 recording_started ? "YES" : "NO");
+        HAL_UART_Transmit(&huart1, (uint8_t*)buf, strlen(buf), 100);
+        last_debug_time = now;
+    }
+}
+
+uint8_t Is_Recording_Started(void) {
+    return recording_started;
+}
+
+uint8_t Get_Oscillation_Count(void) {
+    return oscillation_count;
+}
+
+uint8_t Get_Stable_Count(void) {
+    return stable_count;
 }

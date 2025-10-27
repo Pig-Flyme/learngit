@@ -5,8 +5,8 @@
 
 void NTC_Control_Init(void);
 void NTC_Control_Update(void);
-// 添加获取状态函数
-uint8_t NTC_IsHeating(void);
-uint8_t NTC_IsTuneComplete(void);
+uint8_t Is_Recording_Started(void);
+uint8_t Get_Oscillation_Count(void);
+uint8_t Get_Stable_Count(void);
 
 #endif

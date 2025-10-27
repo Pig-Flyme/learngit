@@ -37,6 +37,7 @@
 #include "pid.h"
 #include "ntc_control.h"
 #include "ads8688.h"
+#include "OD.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+GPIO_PinState pin_state;
 extern uint8_t rx_data1[];
 extern uint8_t rx_data3[];
 extern uint8_t rx_data6[];
@@ -62,6 +64,7 @@ extern uint8_t rx_data4[];
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
 //_write 非阻塞 DMA 重定向
 #define UART_TX_BUFFER_SIZE 256
 uint8_t uart_tx_buffer[UART_TX_BUFFER_SIZE];
@@ -149,11 +152,16 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start(&htim4);
+  OD_Init();
+  HAL_Delay(50);
   ADS8688_Init();
   printf("ADS8688 Initialized Successfully!\r\n");
   HAL_Delay(50);
   Relay_Init();
   HAL_Delay(50);
+
+  static uint32_t last_OD_time = 0;//OD任务计时
   static uint32_t last_Endgas_time = 0;//尾气任务计时
   static uint32_t last_ph_time = 0;//ph任务计时
   static uint32_t last_temp_time = 0;  // 温控任务计时器
@@ -179,6 +187,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 	    // 每 1000ms 执行一次 pH 任务
 	      if (HAL_GetTick() - last_ph_time >= 3000) {
 	          Task_PH();
@@ -197,9 +206,15 @@ int main(void)
 	      }
 
 	      if (HAL_GetTick() - last_ox_time >= 2000) {
-	    	  ADS8688_ScanAllChannels();  // 更新温度控制
+	    	 ADS8688_ReadOxygen(4);  // 更新温度控制
+	    	 //ADS8688_ReadCH2Voltage();
 	      	      last_ox_time = HAL_GetTick();
 	      	      }
+	      if (HAL_GetTick() - last_OD_time >= 4000) {
+	    	  OD_Task();             // 更新OD控制
+	      	   last_OD_time = HAL_GetTick();
+	      	    }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

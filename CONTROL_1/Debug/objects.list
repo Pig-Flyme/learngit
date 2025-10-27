@@ -1,3 +1,4 @@
+"./Core/Src/OD.o"
 "./Core/Src/adc.o"
 "./Core/Src/ads8688.o"
 "./Core/Src/dma.o"

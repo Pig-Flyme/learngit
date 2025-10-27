@@ -42,6 +42,7 @@
 #define CH5_INPUT_RANGE            0x0A
 #define CH6_INPUT_RANGE            0x0B
 #define CH7_INPUT_RANGE            0x0C
+#define CH2_PGA            0x10   // 自定义逻辑位置，无硬件对应寄存器，只是方便调用
 
 // 输入范围设置
 #define VREF_B_125                 0x01  // 双极±5.12V
@@ -53,7 +54,8 @@ void ADS8688_Init(void);
 void ADS8688_Write_Command(uint16_t com);
 void ADS8688_Write_Program(uint8_t addr, uint8_t data);
 void Get_MAN_CH_Data(uint16_t ch, uint16_t *data);
-void ADS8688_ScanAllChannels(void);
+void ADS8688_ReadOxygen(uint8_t ch);
+void ADS8688_ReadCH2Voltage(void);
 
 
 

@@ -1,4 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+Core/Src/OD.o: ../Core/Src/OD.c ../Core/Inc/OD.h ../Core/Inc/ads8688.h \
+ ../Core/Inc/spi.h ../Core/Inc/main.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
@@ -35,15 +36,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/dma.h ../Core/Inc/spi.h \
- ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- ../Core/Inc/pump.h ../Core/Inc/usart.h ../Core/Inc/temperature.h \
- ../Core/Inc/adc.h ../Core/Inc/ph.h ../Core/Inc/pump.h ../Core/Inc/stir.h \
- ../Core/Inc/relay.h ../Core/Inc/gpio.h ../Core/Inc/oxygen.h \
- ../Core/Inc/endgas.h ../Core/Inc/pid.h ../Core/Inc/ntc_control.h \
- ../Core/Inc/pid.h ../Core/Inc/ads8688.h ../Core/Inc/spi.h \
- ../Core/Inc/OD.h
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
+../Core/Inc/OD.h:
+../Core/Inc/ads8688.h:
+../Core/Inc/spi.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -82,27 +78,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-../Core/Inc/adc.h:
-../Core/Inc/main.h:
-../Core/Inc/dma.h:
-../Core/Inc/spi.h:
-../Core/Inc/tim.h:
-../Core/Inc/usart.h:
-../Core/Inc/gpio.h:
-../Core/Inc/pump.h:
-../Core/Inc/usart.h:
-../Core/Inc/temperature.h:
-../Core/Inc/adc.h:
-../Core/Inc/ph.h:
-../Core/Inc/pump.h:
-../Core/Inc/stir.h:
-../Core/Inc/relay.h:
-../Core/Inc/gpio.h:
-../Core/Inc/oxygen.h:
-../Core/Inc/endgas.h:
-../Core/Inc/pid.h:
-../Core/Inc/ntc_control.h:
-../Core/Inc/pid.h:
-../Core/Inc/ads8688.h:
-../Core/Inc/spi.h:
-../Core/Inc/OD.h:

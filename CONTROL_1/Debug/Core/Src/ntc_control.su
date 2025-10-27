@@ -1,3 +1,6 @@
-../Core/Src/ntc_control.c:22:13:PreAdjustTemperature	24	static
-../Core/Src/ntc_control.c:45:6:NTC_Control_Init	16	static
-../Core/Src/ntc_control.c:58:6:NTC_Control_Update	200	static
+../Core/Src/ntc_control.c:35:13:PreAdjustTemperature	24	static
+../Core/Src/ntc_control.c:58:6:NTC_Control_Init	16	static
+../Core/Src/ntc_control.c:83:6:NTC_Control_Update	216	static
+../Core/Src/ntc_control.c:210:9:Is_Recording_Started	4	static
+../Core/Src/ntc_control.c:214:9:Get_Oscillation_Count	4	static
+../Core/Src/ntc_control.c:218:9:Get_Stable_Count	4	static

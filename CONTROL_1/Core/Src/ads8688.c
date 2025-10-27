@@ -44,7 +44,7 @@ void ADS8688_Init(void)
     // 所有通道：单极 0–10.24V
     ADS8688_Write_Program(CH0_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH1_INPUT_RANGE, VREF_U_25);
-    ADS8688_Write_Program(CH2_INPUT_RANGE, VREF_U_25);
+    ADS8688_Write_Program(CH2_INPUT_RANGE, VREF_B_0625);
     ADS8688_Write_Program(CH3_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH4_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH5_INPUT_RANGE, VREF_U_25);
@@ -58,7 +58,7 @@ void ADS8688_Init(void)
     // 选择通道 0 开始
     ADS8688_Write_Command(MAN_CH_0);
 
-    printf("ADS8688 Initialized for 0–10.24V unipolar (4–20mA via 499R)\r\n");
+    printf("ADS8688 Initialized: CH2 ±39.0625mV, CH0/1/3~7 4–20mA\r\n");
 }
 
 // 读取单通道原始值
@@ -76,9 +76,11 @@ void Get_MAN_CH_Data(uint16_t ch, uint16_t *data)
     *data = ((uint16_t)Rx[2] << 8) | Rx[3];
 }
 
-// 扫描所有通道并换算为 mA 与 DO(%)
-void ADS8688_ScanAllChannels(void)
+// 读取指定通道并换算为 mA 与 DO(%)
+void ADS8688_ReadOxygen(uint8_t ch)
 {
+    if (ch > 7) return; // 防止越界
+
     const uint16_t channels[8] = {
         MAN_CH_0, MAN_CH_1, MAN_CH_2, MAN_CH_3,
         MAN_CH_4, MAN_CH_5, MAN_CH_6, MAN_CH_7
@@ -86,12 +88,10 @@ void ADS8688_ScanAllChannels(void)
     const char *names[8] = {
         "CH0","CH1","CH2","CH3","CH4","CH5","CH6","CH7"
     };
-
     // ==== 校准参数 ====
     // 实测电压点：4 mA → 约 1.996 V，20 mA → 约 9.980 V
     const float V_ZERO = 1.996f;   // V @ 4 mA
     const float V_FULL = 9.980f;   // V @ 20 mA
-    const float R_SHUNT = 499.0f;  // Ω 电阻
     const float V_FS = 10.24f;     // ADS8688 满量程电压 (V)
     const float ADC_FULL = 65536.0f;
 
@@ -99,10 +99,8 @@ void ADS8688_ScanAllChannels(void)
     const float DO_LRV = 0.0f;     // 4 mA 对应 0 mg/L
     const float DO_URV = 20.0f;    // 20 mA 对应 20 mg/L
 
-    for (int i = 0; i < 8; i++)
-    {
         uint16_t adc_data;
-        Get_MAN_CH_Data(channels[i], &adc_data);
+        Get_MAN_CH_Data(channels[ch], &adc_data);
 
         // 1. ADC码 → 电压 (V)
         float voltage = (float)adc_data * V_FS / ADC_FULL;
@@ -117,8 +115,20 @@ void ADS8688_ScanAllChannels(void)
         float DO_mgL = ratio * (DO_URV - DO_LRV) + DO_LRV;
 
         // 5. 打印结果
-        printf("%s: %7.3f V | %6.3f mA | DO=%6.2f mg/L | Raw=0x%04X\r\n",
-               names[i], voltage, current_mA, DO_mgL, adc_data);
-    }
+        printf("%s: %7.3f V | %6.3f mA | DO=%6.2f mg/L | adc=0x%04X\r\n",
+               names[ch], voltage, current_mA, DO_mgL, adc_data);
+
 }
 
+// 读取 CH2 ±39.0625mV 小信号电压
+void ADS8688_ReadCH2Voltage(void)
+{
+    uint16_t adc_data;
+    Get_MAN_CH_Data(MAN_CH_2, &adc_data);
+
+    // bipolar ±39.0625mV，PGA=64 放大后满量程 ±2.5V
+    const float V_FS = 2.5f;  // PGA 输出满量程
+    float voltage = ((float)adc_data / 32768.0f - 1.0f) * V_FS;
+
+    printf("CH2: %7.5f V | adc=0x%04X\r\n", voltage, adc_data);
+}
