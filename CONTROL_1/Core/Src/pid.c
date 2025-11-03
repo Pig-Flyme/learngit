@@ -1,6 +1,5 @@
 #include "pid.h"
 #include "stdio.h"
-#include "stm32h7xx_hal.h"
 
 // ================= PID 初始化 =================
 void PID_Init(PID_HandleTypeDef *pid, float Kp, float Ki, float Kd, float min, float max) {
