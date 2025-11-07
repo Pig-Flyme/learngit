@@ -8,7 +8,6 @@
 #ifndef INC_PH_H_
 #define INC_PH_H_
 
-#include "stm32h7xx_hal.h"
 #include <stdint.h>
 #include "usart.h"
 #include <string.h>

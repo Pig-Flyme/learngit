@@ -8,7 +8,6 @@
 #ifndef INC_PUMP_H_
 #define INC_PUMP_H_
 
-#include "stm32h7xx_hal.h"
 #include <stdint.h>
 #include "usart.h"
 #include <stdio.h>

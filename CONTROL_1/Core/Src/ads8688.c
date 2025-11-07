@@ -1,5 +1,7 @@
 #include "ads8688.h"
 
+float DO_mgL = 0.0f;  // 全局变量，存储溶氧值
+
 extern SPI_HandleTypeDef hspi4;
 
 // 写命令函数

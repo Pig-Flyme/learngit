@@ -8,7 +8,6 @@
 #ifndef INC_STIR_H_
 #define INC_STIR_H_
 
-#include "stm32h7xx_hal.h"
 #include <stdint.h>
 #include "usart.h"
 #include "stdio.h"

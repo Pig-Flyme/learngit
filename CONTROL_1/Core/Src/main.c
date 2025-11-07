@@ -38,6 +38,9 @@
 #include "ntc_control.h"
 #include "ads8688.h"
 #include "OD.h"
+#include "endgas.h"
+#include "pt100.h"
+#include "pwm2.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +56,7 @@ extern uint8_t rx_data3[];
 extern uint8_t rx_data6[];
 extern uint8_t rx_data7[];
 extern uint8_t rx_data4[];
+extern uint8_t rx_data8[];
 #define RX_BUFFER_SIZE 512
 /* USER CODE END PD */
 
@@ -151,7 +155,10 @@ int main(void)
   MX_UART7_Init();
   MX_ADC1_Init();
   MX_SPI4_Init();
+  MX_UART8_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
+
   HAL_TIM_Base_Start(&htim4);
   OD_Init();
   HAL_Delay(50);
@@ -161,6 +168,7 @@ int main(void)
   Relay_Init();
   HAL_Delay(50);
 
+  static uint32_t last_pt100_time = 0;
   static uint32_t last_OD_time = 0;//OD任务计时
   static uint32_t last_Endgas_time = 0;//尾气任务计时
   static uint32_t last_ph_time = 0;//ph任务计时
@@ -174,12 +182,18 @@ int main(void)
   __HAL_DMA_DISABLE_IT(huart6.hdmarx, DMA_IT_HT);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart4, rx_data4, sizeof(rx_data4));
     __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart8, rx_data8, sizeof(rx_data8));
+        __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
+    PT100_Init();
   Get_Sign();
   HAL_Delay(50);
   SpeedMode();
   HAL_Delay(50);
   Start_Stir();
+//  PWM2_Init();
+//  HAL_Delay(50);
   NTC_Control_Init();  // 初始化温控（执行自整定）
+
 
   /* USER CODE END 2 */
 
@@ -201,19 +215,23 @@ int main(void)
 
 	      // 每1000ms执行一次温控任务
 	      if (HAL_GetTick() - last_temp_time >= 1000) {
-	        NTC_Control_Update();  // 更新温度控制
+	        NTC_Control_Update();// 更新温度控制
 	        last_temp_time = HAL_GetTick();
 	      }
 
 	      if (HAL_GetTick() - last_ox_time >= 2000) {
-	    	 ADS8688_ReadOxygen(4);  // 更新温度控制
-	    	 //ADS8688_ReadCH2Voltage();
+	    	 ADS8688_ReadOxygen(4);  // 更新溶氧控制
 	      	      last_ox_time = HAL_GetTick();
 	      	      }
 	      if (HAL_GetTick() - last_OD_time >= 4000) {
-	    	  OD_Task();             // 更新OD控制
+	    	  OD_Task();   // 更新OD控制
 	      	   last_OD_time = HAL_GetTick();
 	      	    }
+	      // 每2000ms执行一次PT100温度
+	      if (HAL_GetTick() - last_pt100_time >= 2000) {
+	          PT100_Task();
+	          last_pt100_time = HAL_GetTick();
+	      }
 
     /* USER CODE END WHILE */
 

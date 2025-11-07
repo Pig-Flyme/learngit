@@ -2,7 +2,7 @@
 #define PID_H
 
 #include <stdio.h>
-#include "stm32h7xx_hal.h"
+#include <stdint.h>
 
 // ================= PID 基本功能 =================
 

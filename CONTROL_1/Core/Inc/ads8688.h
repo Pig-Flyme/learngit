@@ -12,6 +12,7 @@
 #include "stdio.h"
 #include <stdint.h>
 
+
 // 引脚定义
 #define ADS8688_CS_LOW()    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_RESET)
 #define ADS8688_CS_HIGH()   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_4, GPIO_PIN_SET)

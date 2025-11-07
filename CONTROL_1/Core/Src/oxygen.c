@@ -1,7 +1,7 @@
 #include "oxygen.h"
 
- uint8_t rx_data4[RX_BUFFER_SIZE];    // uart7接收缓存
- uint8_t tx_ox_flag = 0;    // uart7发送完成标志
+ uint8_t rx_data4[RX_BUFFER_SIZE];    // uart4接收缓存
+ uint8_t tx_ox_flag = 0;    // uart4发送完成标志
  uint8_t rx_ox_flag = 0;
  uint8_t current_device = 0;  // 0设置为溶氧设备，1设置为尾气设备
 
@@ -87,3 +87,4 @@ void Send_Task(void){
 		current_device=0;
 	}
 }
+

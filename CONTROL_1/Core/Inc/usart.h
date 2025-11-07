@@ -27,12 +27,14 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <stdio.h>
 /* USER CODE BEGIN Includes */
 extern uint8_t tx_stir_flag ;
 extern uint8_t tx_pump_flag ;
 extern uint8_t tx_ph_flag ;
 extern uint8_t tx_ox_flag ;
+extern uint8_t tx_pt100_flag ;
+extern uint8_t rx_pt100_flag ;
 extern uint8_t rx_ox_flag ;
 extern uint8_t rx_ph_flag ;
 extern uint8_t rx_stir_flag ;
@@ -42,6 +44,8 @@ extern uint8_t rx_pump_flag ;
 extern UART_HandleTypeDef huart4;
 
 extern UART_HandleTypeDef huart7;
+
+extern UART_HandleTypeDef huart8;
 
 extern UART_HandleTypeDef huart1;
 
@@ -60,6 +64,7 @@ extern volatile uint8_t tx_busy;
 
 void MX_UART4_Init(void);
 void MX_UART7_Init(void);
+void MX_UART8_Init(void);
 void MX_USART1_UART_Init(void);
 void MX_USART3_UART_Init(void);
 void MX_USART6_UART_Init(void);

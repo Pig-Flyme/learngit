@@ -1,7 +1,5 @@
-Core/Src/ntc_control.o: ../Core/Src/ntc_control.c \
- ../Core/Inc/ntc_control.h ../Core/Inc/pid.h ../Core/Inc/pid.h \
- ../Core/Inc/relay.h ../Core/Inc/usart.h ../Core/Inc/main.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
+Core/Src/pwm2.o: ../Core/Src/pwm2.c ../Core/Inc/pwm2.h ../Core/Inc/tim.h \
+ ../Core/Inc/main.h ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h \
@@ -38,13 +36,9 @@ Core/Src/ntc_control.o: ../Core/Src/ntc_control.c \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Core/Inc/gpio.h ../Core/Inc/temperature.h ../Core/Inc/adc.h \
- ../Core/Inc/usart.h
-../Core/Inc/ntc_control.h:
-../Core/Inc/pid.h:
-../Core/Inc/pid.h:
-../Core/Inc/relay.h:
-../Core/Inc/usart.h:
+ ../Core/Inc/ads8688.h ../Core/Inc/spi.h
+../Core/Inc/pwm2.h:
+../Core/Inc/tim.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -83,7 +77,5 @@ Core/Src/ntc_control.o: ../Core/Src/ntc_control.c \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-../Core/Inc/gpio.h:
-../Core/Inc/temperature.h:
-../Core/Inc/adc.h:
-../Core/Inc/usart.h:
+../Core/Inc/ads8688.h:
+../Core/Inc/spi.h:
