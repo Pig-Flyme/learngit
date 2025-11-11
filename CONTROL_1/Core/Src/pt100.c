@@ -25,7 +25,7 @@ void PT100_Init(void)
 void PT100_GetTemperature(void)
 {
 	// 清空接收缓存
-		   memset(rx_data4, 0, sizeof(rx_data4));
+		   memset(rx_data8, 0, sizeof(rx_data8));
 	       uint8_t temp_cmd[] = {0x01,       // 设备地址
 	    	        0x03,       // 功能码: 读取保持寄存器
 	    	        0x00, 0x00, // 起始地址: 0x0000
@@ -77,6 +77,7 @@ void PT100_ReadTemperature(void)
             // 转换为浮点温度值 (单位: 0.0001℃)
             pt100_temp = (float)temp_raw * 0.0001f;
 
+
             printf("解析后的PT100温度: %.4f ℃\r\n", pt100_temp);
             break;
         }
@@ -88,7 +89,7 @@ void PT100_ReadTemperature(void)
 }
 
 // PT100任务函数
-void PT100_Task(void)
+float PT100_Task(void)
 {
     PT100_GetTemperature();
 
@@ -98,10 +99,12 @@ void PT100_Task(void)
 
 
         PT100_ReadTemperature();
+
         rx_pt100_flag = 0;
 
         // 重新启动DMA接收
         HAL_UARTEx_ReceiveToIdle_DMA(&huart8, rx_data8, sizeof(rx_data8));
+        return pt100_temp;
 
 }
 

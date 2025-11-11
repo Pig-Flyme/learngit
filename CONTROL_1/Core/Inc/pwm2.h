@@ -12,8 +12,7 @@
 #include "ads8688.h"
 #include <stdio.h>
 
-void Set_PWM_Duty(float duty_percent);
-void Pump_Control_Update(void);
-void PWM2_Init(void);
+void Set_PWM_DutyCycle(float duty_percent);
+void Test_HW517(void);
 
 #endif /* INC_PWM2_H_ */

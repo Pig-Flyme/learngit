@@ -1,5 +1,4 @@
 #include "pid.h"
-#include "stdio.h"
 #include <math.h>
 
 // ================= PID 初始化 =================

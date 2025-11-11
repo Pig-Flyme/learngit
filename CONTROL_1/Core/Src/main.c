@@ -21,7 +21,6 @@
 #include "adc.h"
 #include "dma.h"
 #include "spi.h"
-#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -147,7 +146,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
-  MX_TIM4_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
@@ -156,10 +154,8 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI4_Init();
   MX_UART8_Init();
-  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start(&htim4);
   OD_Init();
   HAL_Delay(50);
   ADS8688_Init();
@@ -168,7 +164,6 @@ int main(void)
   Relay_Init();
   HAL_Delay(50);
 
-  static uint32_t last_pt100_time = 0;
   static uint32_t last_OD_time = 0;//OD任务计时
   static uint32_t last_Endgas_time = 0;//尾气任务计时
   static uint32_t last_ph_time = 0;//ph任务计时
@@ -190,8 +185,7 @@ int main(void)
   SpeedMode();
   HAL_Delay(50);
   Start_Stir();
-//  PWM2_Init();
-//  HAL_Delay(50);
+
   NTC_Control_Init();  // 初始化温控（执行自整定）
 
 
@@ -227,11 +221,7 @@ int main(void)
 	    	  OD_Task();   // 更新OD控制
 	      	   last_OD_time = HAL_GetTick();
 	      	    }
-	      // 每2000ms执行一次PT100温度
-	      if (HAL_GetTick() - last_pt100_time >= 2000) {
-	          PT100_Task();
-	          last_pt100_time = HAL_GetTick();
-	      }
+
 
     /* USER CODE END WHILE */
 

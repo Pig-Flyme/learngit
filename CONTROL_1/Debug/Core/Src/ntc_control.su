@@ -1,2 +1,2 @@
-../Core/Src/ntc_control.c:25:6:NTC_Control_Init	16	static
-../Core/Src/ntc_control.c:38:6:NTC_Control_Update	56	static
+../Core/Src/ntc_control.c:26:6:NTC_Control_Init	16	static
+../Core/Src/ntc_control.c:39:6:NTC_Control_Update	56	static

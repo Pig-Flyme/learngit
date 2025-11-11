@@ -21,7 +21,7 @@ extern float pt100_temp;
 void PT100_Init(void);
 void PT100_GetTemperature(void);
 void PT100_ReadTemperature(void);
-void PT100_Task(void);
+float PT100_Task(void);
 uint16_t PT100_CRC16(uint8_t *data, uint16_t len);
 
 #endif /* INC_PT100_H_ */

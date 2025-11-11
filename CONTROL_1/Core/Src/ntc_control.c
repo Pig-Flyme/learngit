@@ -5,6 +5,7 @@
 #include "usart.h"
 #include <math.h>
 #include <string.h>
+#include "pt100.h"
 
 // ==================== 参数定义 ====================
 #define SETPOINT                37.0f
@@ -37,7 +38,7 @@ void NTC_Control_Init(void)
 // ==================== 主循环任务 ====================
 void NTC_Control_Update(void)
 {
-    float temp = Read_Temperature();
+    float temp = PT100_Task();
     uint32_t now = HAL_GetTick();
 
     // ---------- 阶段1：预热 ----------
@@ -50,7 +51,7 @@ void NTC_Control_Update(void)
 
             PID_Init(&pid, pid_params.Kp, pid_params.Ki, pid_params.Kd, -100, 100);
             PID_AutoTune_Init(&tune_handle, &pid_params,
-                              Read_Temperature, Relay_Switch,
+            		PT100_Task, Relay_Switch,
                               SETPOINT, AUTO_TUNE_DURATION);
 
             temp_stage = TEMP_STAGE_AUTOTUNE;
