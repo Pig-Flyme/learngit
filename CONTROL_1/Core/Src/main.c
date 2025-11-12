@@ -21,6 +21,7 @@
 #include "adc.h"
 #include "dma.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -146,6 +147,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
+  MX_TIM4_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
@@ -154,8 +156,10 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI4_Init();
   MX_UART8_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_TIM_Base_Start(&htim4);
   OD_Init();
   HAL_Delay(50);
   ADS8688_Init();
@@ -185,7 +189,8 @@ int main(void)
   SpeedMode();
   HAL_Delay(50);
   Start_Stir();
-
+//  PWM2_Init();
+//  HAL_Delay(50);
   NTC_Control_Init();  // 初始化温控（执行自整定）
 
 
@@ -208,7 +213,7 @@ int main(void)
 	      	      }
 
 	      // 每1000ms执行一次温控任务
-	      if (HAL_GetTick() - last_temp_time >= 1000) {
+	      if (HAL_GetTick() - last_temp_time >= 500) {
 	        NTC_Control_Update();// 更新温度控制
 	        last_temp_time = HAL_GetTick();
 	      }

@@ -1,4 +1,5 @@
 #include "pid.h"
+#include "stdio.h"
 #include <math.h>
 
 // ================= PID 初始化 =================
@@ -11,6 +12,7 @@ void PID_Init(PID_HandleTypeDef *pid, float Kp, float Ki, float Kd, float min, f
     pid->integral = 0.0f;
     pid->output_min = min;
     pid->output_max = max;
+    pid->output = 0.0f;
     pid->last_pv = 0.0f;
 }
 
@@ -19,22 +21,26 @@ float PID_Calculate(PID_HandleTypeDef *pid, float setpoint, float pv, float dt) 
     pid->setpoint = setpoint;
     float error = setpoint - pv;
 
-    // --- 改进积分抗饱和 ---
-    if (fabsf(error) < 0.3f) {   // 仅在误差较小时积累积分
+    // --- 改进的积分抗饱和 ---
+    // 只在误差较小时积累积分，避免积分饱和
+    if (fabsf(error) < 0.2f) {
         pid->integral += pid->params.Ki * error * dt;
+    } else if (fabsf(error) < 0.5f) {
+        pid->integral += pid->params.Ki * error * dt * 0.5f; // 减半积分
     } else {
-        pid->integral *= 0.9f;   // 误差大时衰减积分
+        pid->integral *= 0.8f; // 大误差时快速衰减积分
     }
 
-    // --- 自适应积分限幅（积分不超过输出的30%） ---
-    float Imax = pid->output_max * 0.3f;
+    // --- 更严格的积分限幅 ---
+    float Imax = pid->output_max * 0.2f; // 减小积分上限
     if (pid->integral > Imax) pid->integral = Imax;
     if (pid->integral < -Imax) pid->integral = -Imax;
 
-    // --- 微分项低通滤波 ---
+    // --- 改进的微分滤波 ---
     float derivative_raw = (error - pid->last_error) / dt;
     static float derivative_filt = 0.0f;
-    derivative_filt += (derivative_raw - derivative_filt) * 0.1f;
+    float alpha = 0.3f; // 更强的滤波
+    derivative_filt = alpha * derivative_raw + (1 - alpha) * derivative_filt;
     float derivative = derivative_filt;
 
     pid->last_error = error;
@@ -46,8 +52,7 @@ float PID_Calculate(PID_HandleTypeDef *pid, float setpoint, float pv, float dt) 
     if (output > pid->output_max) output = pid->output_max;
     if (output < pid->output_min) output = pid->output_min;
 
-    printf("[PID] SP=%.2f, PV=%.2f, Err=%.3f, Out=%.2f, I=%.3f\r\n",
-           setpoint, pv, error, output, pid->integral);
+    pid->output = output;
 
     return output;
 }
@@ -167,4 +172,3 @@ void PID_AutoTune_Task(AutoTuneHandle *h) {
         printf("[AutoTune] Timeout - keeping last PID.\r\n");
     }
 }
-
