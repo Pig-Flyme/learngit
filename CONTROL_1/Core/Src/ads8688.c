@@ -46,7 +46,7 @@ void ADS8688_Init(void)
     // 所有通道：单极 0–10.24V
     ADS8688_Write_Program(CH0_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH1_INPUT_RANGE, VREF_U_25);
-    ADS8688_Write_Program(CH2_INPUT_RANGE, VREF_B_0625);
+    ADS8688_Write_Program(CH2_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH3_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH4_INPUT_RANGE, VREF_U_25);
     ADS8688_Write_Program(CH5_INPUT_RANGE, VREF_U_25);
@@ -60,7 +60,7 @@ void ADS8688_Init(void)
     // 选择通道 0 开始
     ADS8688_Write_Command(MAN_CH_0);
 
-    printf("ADS8688 Initialized: CH2 ±39.0625mV, CH0/1/3~7 4–20mA\r\n");
+    printf("ADS8688 Initialized:  CH0~7 \r\n");
 }
 
 // 读取单通道原始值
@@ -114,7 +114,7 @@ void ADS8688_ReadOxygen(uint8_t ch)
         float ratio = (current_mA - 4.0f) / 16.0f;
         if (ratio < 0.0f) ratio = 0.0f;
         if (ratio > 1.0f) ratio = 1.0f;
-        float DO_mgL = ratio * (DO_URV - DO_LRV) + DO_LRV;
+         DO_mgL = ratio * (DO_URV - DO_LRV) + DO_LRV-0.9;//-0.9是零点校准，过饱和亚硫酸钠 0.9-1.4
 
         // 5. 打印结果
         printf("%s: %7.3f V | %6.3f mA | DO=%6.2f mg/L | adc=0x%04X\r\n",
@@ -122,15 +122,7 @@ void ADS8688_ReadOxygen(uint8_t ch)
 
 }
 
-// 读取 CH2 ±39.0625mV 小信号电压
-void ADS8688_ReadCH2Voltage(void)
-{
-    uint16_t adc_data;
-    Get_MAN_CH_Data(MAN_CH_2, &adc_data);
 
-    // bipolar ±39.0625mV，PGA=64 放大后满量程 ±2.5V
-    const float V_FS = 2.5f;  // PGA 输出满量程
-    float voltage = ((float)adc_data / 32768.0f - 1.0f) * V_FS;
+void ADS8688_Readantifoam(uint8_t ch){
 
-    printf("CH2: %7.5f V | adc=0x%04X\r\n", voltage, adc_data);
 }

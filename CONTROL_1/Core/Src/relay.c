@@ -9,13 +9,13 @@ void Relay_Init(void)
 }
 
 void Relay_On(void) {
-    HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET); // 低电平激活
+    HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET); // 高电平激活
     relay_status = 1;
     printf("[Relay] On (Heating)\r\n");
 }
 
 void Relay_Off(void) {
-    HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_RESET);   // 高电平关闭
+    HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_RESET);   // 低电平关闭
     relay_status = 0;
     printf("[Relay] Off (Stop Heating)\r\n");
 }

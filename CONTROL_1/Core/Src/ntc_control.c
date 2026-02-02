@@ -8,7 +8,7 @@
 #include "pt100.h"
 
 // ==================== 参数定义 ====================
-#define SETPOINT                37.0f
+#define SETPOINT                30.0f
 #define PRE_ADJUST_TOLERANCE    0.5f      // 减小预热容差
 #define PREHEAT_TIMEOUT         60000
 #define AUTO_TUNE_DURATION      300000
@@ -142,8 +142,8 @@ void NTC_Control_Update(void)
         // 调试信息（减少打印频率）
         static uint32_t last_debug_time = 0;
         if (now - last_debug_time >= 2000) {
-            printf("[PID] temp=%.3f°C | Out=%.1f | Rate=%.3f°C/s | Heat=%d\r\n",
-                   temp, output, temp_rise_rate, should_heat);
+            printf("[PID] SP=%.1f°C | PV=%.3f°C | Out=%.1f | Rate=%.3f°C/s | Heat=%d\r\n",
+            		SETPOINT,temp, output, temp_rise_rate, should_heat);
             last_debug_time = now;
         }
     }

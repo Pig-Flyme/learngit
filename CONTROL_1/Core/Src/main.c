@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
@@ -37,7 +36,7 @@
 #include "pid.h"
 #include "ntc_control.h"
 #include "ads8688.h"
-#include "OD.h"
+//#include "OD.h"
 #include "endgas.h"
 #include "pt100.h"
 #include "pwm2.h"
@@ -99,7 +98,6 @@ int _write(int file, char *ptr, int len) {
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void PeriphCommonClock_Config(void);
 static void MPU_Config(void);
 /* USER CODE BEGIN PFP */
 
@@ -136,9 +134,6 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure the peripherals common clocks */
-  PeriphCommonClock_Config();
-
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -151,16 +146,14 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
-  MX_ADC2_Init();
   MX_UART7_Init();
-  MX_ADC1_Init();
   MX_SPI4_Init();
   MX_UART8_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start(&htim4);
-  OD_Init();
+  //OD_Init();
   HAL_Delay(50);
   ADS8688_Init();
   printf("ADS8688 Initialized Successfully!\r\n");
@@ -168,7 +161,7 @@ int main(void)
   Relay_Init();
   HAL_Delay(50);
 
-  static uint32_t last_OD_time = 0;//OD任务计时
+
   static uint32_t last_Endgas_time = 0;//尾气任务计时
   static uint32_t last_ph_time = 0;//ph任务计时
   static uint32_t last_temp_time = 0;  // 温控任务计时器
@@ -222,10 +215,7 @@ int main(void)
 	    	 ADS8688_ReadOxygen(4);  // 更新溶氧控制
 	      	      last_ox_time = HAL_GetTick();
 	      	      }
-	      if (HAL_GetTick() - last_OD_time >= 4000) {
-	    	  OD_Task();   // 更新OD控制
-	      	   last_OD_time = HAL_GetTick();
-	      	    }
+
 
 
     /* USER CODE END WHILE */
@@ -254,10 +244,6 @@ void SystemClock_Config(void)
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
-  /** Macro to configure the PLL clock source
-  */
-  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSI);
-
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -284,32 +270,6 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief Peripherals Common Clock Configuration
-  * @retval None
-  */
-void PeriphCommonClock_Config(void)
-{
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-
-  /** Initializes the peripherals clock
-  */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInitStruct.PLL2.PLL2M = 4;
-  PeriphClkInitStruct.PLL2.PLL2N = 10;
-  PeriphClkInitStruct.PLL2.PLL2P = 2;
-  PeriphClkInitStruct.PLL2.PLL2Q = 2;
-  PeriphClkInitStruct.PLL2.PLL2R = 2;
-  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
-  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
-  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }

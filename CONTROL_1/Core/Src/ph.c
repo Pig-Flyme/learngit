@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 #define PUMP_RUNTIME      1500   // 泵运行时间 1.5秒
-#define PUMP_COOLDOWN     180000   // 泵冷却时间 3分
+#define PUMP_COOLDOWN     18000   // 泵冷却时间 30秒
 uint8_t current_pump_type = 0; // 0=无泵, 1=酸泵, 2=碱泵
 
-float ph_set = 5.0f;        // 默认目标 pH
+float ph_set = 6.5f;        // 默认目标 pH
 float ph_current = 0.0f;    // 实时 pH
 float ph_read = 5.0f;       // 从报文解析的 pH
 float deadband = 0.2f;      // pH 调节死区

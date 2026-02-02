@@ -26,9 +26,9 @@ uint8_t rx_data7[RX_BUFFER_SIZE];    // uart7接收缓存
 
  }
 
- //转速300
+ //转速800
 void Start_Stir(){
-	uint8_t sendBuffer[] = {0x01, 0x06, 0x00, 0x02, 0x01, 0x2C, 0x28, 0x47};
+	uint8_t sendBuffer[] = {0x01, 0x06, 0x00, 0x02, 0x03, 0x20, 0x29, 0x22};
 	tx_stir_flag = 0;
 	HAL_UART_Transmit_DMA(&huart7, sendBuffer, sizeof(sendBuffer));
 	while (tx_stir_flag == 0) {}  // 等待发送完成

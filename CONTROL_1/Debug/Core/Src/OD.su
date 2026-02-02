@@ -1,4 +1,0 @@
-../Core/Src/OD.c:32:14:KalmanFilter	16	static
-../Core/Src/OD.c:42:6:OD_Init	4	static
-../Core/Src/OD.c:54:9:Get_Data	32	static
-../Core/Src/OD.c:96:6:OD_Task	32	static

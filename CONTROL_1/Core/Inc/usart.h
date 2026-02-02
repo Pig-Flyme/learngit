@@ -27,7 +27,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
+
 /* USER CODE BEGIN Includes */
 extern uint8_t tx_stir_flag ;
 extern uint8_t tx_pump_flag ;
