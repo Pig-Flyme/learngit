@@ -1,6 +1,7 @@
 "./Core/Src/OD.o"
 "./Core/Src/ads8688.o"
 "./Core/Src/antifoam.o"
+"./Core/Src/crc.o"
 "./Core/Src/dma.o"
 "./Core/Src/endgas.o"
 "./Core/Src/fed.o"

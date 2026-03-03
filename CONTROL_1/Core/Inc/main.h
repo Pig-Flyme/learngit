@@ -57,13 +57,11 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LED_Pin GPIO_PIN_6
-#define LED_GPIO_Port GPIOA
 #define RELAY_Pin GPIO_PIN_0
 #define RELAY_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define RX_BUFFER_SIZE 512
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

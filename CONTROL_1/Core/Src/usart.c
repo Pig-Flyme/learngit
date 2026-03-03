@@ -21,7 +21,9 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-
+volatile uint8_t usart1_rx_flag = 0;
+uint8_t usart1_rx_buffer[RX_BUFFER_SIZE];
+uint16_t usart1_rx_size = 0;
 // 串口接收完成回调
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 	if (huart->Instance == USART6)
@@ -43,6 +45,17 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     else if (huart->Instance == UART8) {
            	 rx_pt100_flag = 1;
                }
+    else if (huart == &huart1)
+	    {
+    	// 复制数据到专用缓冲区，并保存长度
+    	        memcpy(usart1_rx_buffer, rx_data1, Size);
+    	        usart1_rx_size = Size;
+    	        usart1_rx_flag = 1;   // 通知主循环处理
+
+    	        // 重新启动接收，准备下一次数据
+    	        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_data1, sizeof(rx_data1));
+    	        __HAL_DMA_DISABLE_IT(huart1.hdmarx, DMA_IT_HT);
+	    }
 }
 
 // ================= 发送完成回调 =================

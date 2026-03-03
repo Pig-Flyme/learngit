@@ -26,6 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
 #include <stdint.h>
 #include "pump.h"
 #include "temperature.h"
@@ -36,6 +37,7 @@
 #include "pid.h"
 #include "ntc_control.h"
 #include "ads8688.h"
+#include "crc.h"
 //#include "OD.h"
 #include "endgas.h"
 #include "pt100.h"
@@ -50,13 +52,10 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 GPIO_PinState pin_state;
-extern uint8_t rx_data1[];
-extern uint8_t rx_data3[];
-extern uint8_t rx_data6[];
-extern uint8_t rx_data7[];
-extern uint8_t rx_data4[];
-extern uint8_t rx_data8[];
-#define RX_BUFFER_SIZE 512
+
+uint8_t rx_data1[RX_BUFFER_SIZE];
+
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -175,13 +174,13 @@ int main(void)
   HAL_UARTEx_ReceiveToIdle_DMA(&huart4, rx_data4, sizeof(rx_data4));
     __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
     HAL_UARTEx_ReceiveToIdle_DMA(&huart8, rx_data8, sizeof(rx_data8));
-        __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
+        __HAL_DMA_DISABLE_IT(huart8.hdmarx, DMA_IT_HT);
     PT100_Init();
   Get_Sign();
   HAL_Delay(50);
   SpeedMode();
   HAL_Delay(50);
-  Start_Stir();
+  Set_Stir_Speed(0);
 //  PWM2_Init();
 //  HAL_Delay(50);
   NTC_Control_Init();  // 初始化温控（执行自整定）
@@ -193,6 +192,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // 处理 USART1 接收数据
+	      if (usart1_rx_flag)
+	      {
+	          usart1_rx_flag = 0;   // 清除标志
+
+	          // 调用搅拌命令解析函数
+	          Process_Stir_Command(usart1_rx_buffer, usart1_rx_size);
+	      }
 
 	    // 每 1000ms 执行一次 pH 任务
 	      if (HAL_GetTick() - last_ph_time >= 3000) {

@@ -10,6 +10,8 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include Drivers/STM32H7xx_HAL_Driver/Src/subdir.mk
+-include Drivers/STM32H7xx_HAL_Driver/subdir.mk
+-include Drivers/CMSIS/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
@@ -60,8 +62,8 @@ all: main-build
 main-build: CONTROL_1.elf secondary-outputs
 
 # Tool invocations
-CONTROL_1.elf CONTROL_1.map: $(OBJS) $(USER_OBJS) D:\ST\STM32CubeIDE_1.19.0\workspace_1.19.0\CONTROL_1\STM32H750VBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "CONTROL_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\ST\STM32CubeIDE_1.19.0\workspace_1.19.0\CONTROL_1\STM32H750VBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CONTROL_1.map" -Wl,--gc-sections -static -u _printf_float -u _printf_float -u _scanf_float --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+CONTROL_1.elf CONTROL_1.map: $(OBJS) $(USER_OBJS) D:\stm32\workspace_1.19.0\CONTROL_1\STM32H750VBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "CONTROL_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\stm32\workspace_1.19.0\CONTROL_1\STM32H750VBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="CONTROL_1.map" -Wl,--gc-sections -static -u _printf_float -u _printf_float -u _scanf_float --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

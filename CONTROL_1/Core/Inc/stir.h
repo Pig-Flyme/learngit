@@ -9,13 +9,16 @@
 #define INC_STIR_H_
 
 #include <stdint.h>
-#include "usart.h"
+#include "usart.h"     // 用于 huart1 外部声明
 #include "stdio.h"
+#include "crc.h"        // 用于 CRC16 校验
 
 
+void Process_Stir_Command(uint8_t *buffer, uint16_t size);
+void Set_Stir_Speed(int16_t speed);
 void Get_Sign(void);
-void Start_Stir(void);
-void Stop_Stir(void);
+//void Start_Stir(void);
+//void Stop_Stir(void);
 void SpeedMode(void);
 
 #endif /* INC_STIR_H_ */

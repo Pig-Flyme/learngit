@@ -29,6 +29,12 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+extern uint8_t usart1_rx_buffer[RX_BUFFER_SIZE];
+extern volatile uint8_t usart1_rx_flag;
+extern uint16_t usart1_rx_size;
 extern uint8_t tx_stir_flag ;
 extern uint8_t tx_pump_flag ;
 extern uint8_t tx_ph_flag ;
@@ -59,6 +65,7 @@ extern uint8_t rx_data6[RX_BUFFER_SIZE];  // pump 缓冲区usart6
 extern uint8_t rx_data3[RX_BUFFER_SIZE];  // ph 缓冲区usart3
 extern uint8_t rx_data7[RX_BUFFER_SIZE];  // stir 缓冲区uart7
 extern uint8_t rx_data4[RX_BUFFER_SIZE];  // oxygen 缓冲区uart4
+extern uint8_t rx_data1[RX_BUFFER_SIZE];  //串口接收缓存区usart1
 extern volatile uint8_t tx_busy;
 /* USER CODE END Private defines */
 

@@ -1,4 +1,5 @@
-../Core/Src/stir.c:7:7:Get_Sign	18
-../Core/Src/stir.c:18:7:SpeedMode	18
-../Core/Src/stir.c:30:6:Start_Stir	18
-../Core/Src/stir.c:41:6:Stop_Stir	18
+../Core/Src/stir.c:10:7:Get_Sign	18
+../Core/Src/stir.c:21:7:SpeedMode	18
+../Core/Src/stir.c:37:11:CRC16	4
+../Core/Src/stir.c:59:7:Set_Stir_Speed	20
+../Core/Src/stir.c:91:7:Process_Stir_Command	7

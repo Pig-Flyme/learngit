@@ -36,12 +36,12 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/spi.h ../Core/Inc/tim.h \
  ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/pump.h \
  ../Core/Inc/usart.h ../Core/Inc/temperature.h ../Core/Inc/ph.h \
- ../Core/Inc/pump.h ../Core/Inc/stir.h ../Core/Inc/relay.h \
- ../Core/Inc/gpio.h ../Core/Inc/oxygen.h ../Core/Inc/endgas.h \
- ../Core/Inc/pid.h ../Core/Inc/ntc_control.h ../Core/Inc/pid.h \
- ../Core/Inc/ads8688.h ../Core/Inc/spi.h ../Core/Inc/endgas.h \
- ../Core/Inc/pt100.h ../Core/Inc/pwm2.h ../Core/Inc/tim.h \
- ../Core/Inc/ads8688.h
+ ../Core/Inc/pump.h ../Core/Inc/stir.h ../Core/Inc/crc.h \
+ ../Core/Inc/relay.h ../Core/Inc/gpio.h ../Core/Inc/oxygen.h \
+ ../Core/Inc/endgas.h ../Core/Inc/pid.h ../Core/Inc/ntc_control.h \
+ ../Core/Inc/pid.h ../Core/Inc/ads8688.h ../Core/Inc/spi.h \
+ ../Core/Inc/crc.h ../Core/Inc/endgas.h ../Core/Inc/pt100.h \
+ ../Core/Inc/pwm2.h ../Core/Inc/tim.h ../Core/Inc/ads8688.h
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -89,6 +89,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/ph.h:
 ../Core/Inc/pump.h:
 ../Core/Inc/stir.h:
+../Core/Inc/crc.h:
 ../Core/Inc/relay.h:
 ../Core/Inc/gpio.h:
 ../Core/Inc/oxygen.h:
@@ -98,6 +99,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/pid.h:
 ../Core/Inc/ads8688.h:
 ../Core/Inc/spi.h:
+../Core/Inc/crc.h:
 ../Core/Inc/endgas.h:
 ../Core/Inc/pt100.h:
 ../Core/Inc/pwm2.h:
